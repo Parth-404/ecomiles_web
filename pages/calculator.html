@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator — EcoMiles</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon">🌿</div>EcoMiles</a>
+    <ul class="navbar-links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="calculator.html" class="active">Calculator</a></li>
+      <li><a href="compare.html">Compare</a></li>
+      <li><a href="log.html">My Trips <span id="trip-count-badge" style="background:var(--c-primary);color:#fff;border-radius:100px;padding:1px 7px;font-size:0.72rem;font-weight:700;margin-left:4px">0</span></a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="navbar-auth">
+      <button class="btn-login" data-action="login">Log In</button>
+      <button class="btn btn-primary btn-sm" data-action="login">Sign Up</button>
+      <button class="theme-toggle" id="theme-toggle">☀️</button>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="padding-top:100px;padding-bottom:40px;background:var(--c-bg2);border-bottom:1px solid var(--c-border)">
+  <div class="container">
+    <div class="section-label">CO₂ Calculator</div>
+    <h1 style="font-size:clamp(1.8rem,3vw,2.8rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:10px">Calculate Your Trip Footprint</h1>
+    <p class="text-muted">Follow the steps below to get your full emissions report.</p>
+  </div>
+</div>
+
+<!-- MAIN CALCULATOR -->
+<section class="section">
+  <div class="container">
+
+    <!-- STEPPER -->
+    <div class="stepper" aria-label="Calculator steps">
+      <div class="step active" data-step-num="1">
+        <div class="step-num">1</div>
+        <span class="step-text">Transport</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step-num="2">
+        <div class="step-num">2</div>
+        <span class="step-text">Journey</span>
+      </div>
+      <div class="step-line"></div>
+      <div class="step" data-step-num="3">
+        <div class="step-num">3</div>
+        <span class="step-text">Results</span>
+      </div>
+    </div>
+
+    <form id="calc-form" novalidate>
+
+      <!-- ── STEP 1: TRANSPORT ── -->
+      <div data-step="1" class="active">
+        <div class="card" style="max-width:860px;margin:0 auto">
+          <h2 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px;font-size:1.3rem">Choose Your Mode of Transport</h2>
+          <p class="text-muted" style="font-size:0.9rem;margin-bottom:28px">Select the primary mode you'll use for this journey.</p>
+
+          <div class="transport-grid" id="transport-grid">
+            <!-- Built by JS -->
+          </div>
+
+          <p id="mode-error" class="hidden" style="color:var(--c-accent3);font-size:0.88rem;margin-bottom:16px">⚠️ Please select a transport mode to continue.</p>
+
+          <div style="display:flex;justify-content:flex-end;margin-top:8px">
+            <button type="button" class="btn btn-primary" data-step-next>
+              Continue → Journey Details
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: JOURNEY DETAILS ── -->
+      <div data-step="2">
+        <div class="card" style="max-width:860px;margin:0 auto">
+          <h2 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px;font-size:1.3rem">Journey Details</h2>
+          <p class="text-muted" style="font-size:0.9rem;margin-bottom:28px">Enter how far you're travelling and who's coming along.</p>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px">
+            <div class="form-group">
+              <label class="form-label" for="distance">Distance</label>
+              <div style="position:relative">
+                <input type="number" id="distance" class="form-input" placeholder="e.g. 250" min="0.1" max="20000" step="0.1" aria-describedby="distance-hint" style="padding-right:44px">
+                <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--c-text-dim);font-size:0.85rem;font-family:var(--font-mono)">km</span>
+              </div>
+              <span class="form-hint" id="distance-hint">Enter one-way distance in kilometres</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="passengers">Passengers</label>
+              <input type="number" id="passengers" class="form-input" value="1" min="1" max="800" step="1" aria-describedby="pass-hint">
+              <span class="form-hint" id="pass-hint">Total travellers including you</span>
+            </div>
+          </div>
+
+          <!-- Distance Slider -->
+          <div class="form-group" style="margin-bottom:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+              <label class="form-label" for="distance-slider">Quick Adjust Distance</label>
+              <span id="distance-display" style="font-family:var(--font-mono);font-size:0.88rem;color:var(--c-primary)">— km</span>
+            </div>
+            <input type="range" id="distance-slider" class="range-slider" min="1" max="2000" value="100" step="1">
+            <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--c-text-dim);margin-top:4px;font-family:var(--font-mono)">
+              <span>1 km</span><span>500</span><span>1000</span><span>1500</span><span>2000 km</span>
+            </div>
+          </div>
+
+          <!-- Round trip toggle -->
+          <label style="display:flex;align-items:center;gap:12px;cursor:pointer;padding:14px;background:var(--c-bg2);border:1px solid var(--c-border);border-radius:var(--radius-md);margin-bottom:28px">
+            <input type="checkbox" id="round-trip" style="width:18px;height:18px;accent-color:var(--c-primary)">
+            <div>
+              <div style="font-family:var(--font-display);font-weight:600;font-size:0.92rem">Round Trip</div>
+              <div style="font-size:0.8rem;color:var(--c-text-muted)">Doubles the distance — great for return journeys</div>
+            </div>
+          </label>
+
+          <div style="display:flex;gap:12px;justify-content:space-between">
+            <button type="button" class="btn btn-ghost" data-step-prev>← Back</button>
+            <button type="button" class="btn btn-primary" data-step-next>Calculate Emissions →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: RESULTS ── -->
+      <div data-step="3">
+        <div style="max-width:1000px;margin:0 auto">
+
+          <!-- Top summary row -->
+          <div class="grid-2" style="margin-bottom:24px">
+
+            <!-- Eco Score Card -->
+            <div class="card reveal" style="display:flex;align-items:center;gap:24px">
+              <div class="eco-score-ring" id="eco-ring">
+                <svg width="120" height="120" viewBox="0 0 120 120" aria-hidden="true">
+                  <circle cx="60" cy="60" r="52" fill="none" stroke="rgba(74,197,107,0.12)" stroke-width="10"/>
+                  <circle class="ring-progress" cx="60" cy="60" r="52" fill="none" stroke-width="10"
+                          stroke-linecap="round"
+                          style="stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset 1s ease,stroke 0.5s ease"/>
+                </svg>
+                <div class="score-label">
+                  <span class="score-num" id="eco-score-num">—</span>
+                  <span class="score-text">/ 100</span>
+                </div>
+              </div>
+              <div>
+                <div style="font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--c-text-dim);margin-bottom:4px">Eco Score</div>
+                <div style="font-family:var(--font-display);font-size:1.6rem;font-weight:800" id="eco-score-grade">—</div>
+                <div style="font-size:0.88rem;color:var(--c-text-muted)" id="eco-score-label">—</div>
+              </div>
+            </div>
+
+            <!-- Key Numbers -->
+            <div class="card reveal">
+              <div class="grid-2" style="gap:16px">
+                <div>
+                  <div class="result-label">Total CO₂</div>
+                  <div class="result-number"><span id="res-total-co2-num">—</span></div>
+                  <div class="result-unit">kg CO₂</div>
+                </div>
+                <div>
+                  <div class="result-label">Per Person</div>
+                  <div class="result-number"><span id="res-per-person-num">—</span></div>
+                  <div class="result-unit">kg CO₂</div>
+                </div>
+                <div>
+                  <div class="result-label">Distance</div>
+                  <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--c-text)" id="res-distance">—</div>
+                </div>
+                <div>
+                  <div class="result-label">Fuel Cost Est.</div>
+                  <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:700;color:var(--c-text)" id="res-fuel-cost">—</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trees counter -->
+          <div class="card reveal" style="margin-bottom:24px">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;flex-wrap:wrap;gap:10px">
+              <div>
+                <div class="result-label">🌳 Trees Needed to Offset</div>
+                <div style="font-family:var(--font-display);font-size:2rem;font-weight:800;color:var(--c-primary)" id="res-trees">—</div>
+                <div style="font-size:0.8rem;color:var(--c-text-dim)">Based on 1 tree absorbing ~21 kg CO₂/year</div>
+              </div>
+            </div>
+            <div class="trees-display" id="trees-display" aria-live="polite"></div>
+          </div>
+
+          <!-- Comparison Chart -->
+          <div class="card reveal" style="margin-bottom:24px">
+            <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:4px">Compare All Modes</h3>
+            <p class="text-muted" style="font-size:0.85rem;margin-bottom:8px">Your choice highlighted — same distance & passengers.</p>
+            <div class="chart-container">
+              <canvas id="comparison-chart"></canvas>
+            </div>
+          </div>
+
+          <!-- Equivalences + Tips row -->
+          <div class="grid-2" style="margin-bottom:24px">
+            <div class="card reveal">
+              <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:16px">Your CO₂ in Real Terms</h3>
+              <div style="display:flex;flex-direction:column;gap:10px" id="equivalences">
+                <!-- Built by JS -->
+              </div>
+            </div>
+
+            <div class="card reveal">
+              <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:16px">💡 Eco Tips for You</h3>
+              <ul id="eco-tips" style="list-style:none;padding:0"></ul>
+              <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--c-border)">
+                <div style="font-size:0.8rem;color:var(--c-text-dim)">🌍 Global average: 4.7 tonnes CO₂/person/year</div>
+                <div style="font-size:0.8rem;color:var(--c-text-dim);margin-top:4px">🎯 Target: &lt;2.5 tonnes to meet Paris Agreement</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action buttons -->
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+            <button type="button" id="save-trip" class="btn btn-primary">💾 Save to My Trips</button>
+            <button type="button" id="share-btn" class="btn btn-outline">📤 Share Result</button>
+            <button type="button" id="recalculate" class="btn btn-ghost">🔄 Recalculate</button>
+          </div>
+
+          <p style="font-size:0.8rem;color:var(--c-text-dim)">
+            💡 Tip: Save trips to <a href="log.html" style="color:var(--c-primary)">My Trips</a> to track your cumulative footprint over time.
+          </p>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 EcoMiles. Built with 💚 for the planet.</span>
+      <a href="../index.html" style="color:var(--c-text-dim)">← Back to Home</a>
+    </div>
+  </div>
+</footer>
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:800">🌿 EcoMiles</div>
+      <button id="modal-close" style="background:none;border:none;color:var(--c-text-muted);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <div class="tab-nav"><button class="tab-btn active" data-modal-tab="login">Log In</button><button class="tab-btn" data-modal-tab="signup">Sign Up</button></div>
+    <div data-modal-panel="login">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="••••••••"></div>
+        <button class="btn btn-primary btn-full" onclick="EcoMiles.Utils.showToast('Backend coming soon! 🚀')">Log In</button>
+      </div>
+    </div>
+    <div data-modal-panel="signup" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" placeholder="Your Name"></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="Create a password"></div>
+        <button class="btn btn-primary btn-full" onclick="EcoMiles.Utils.showToast('Backend coming soon! 🚀')">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script src="../js/app.js"></script>
+<script src="../js/calculator.js"></script>
+<canvas id="cursor-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999;"></canvas>
+<script>
+  (function () {
+    const canvas = document.getElementById("cursor-canvas");
+    const ctx = canvas.getContext("2d");
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    let mouse = { x: W / 2, y: H / 2 };
+    let particles = [];
+    window.addEventListener("resize", () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+    window.addEventListener("mousemove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; for (let i = 0; i < 2; i++) spawnParticle(); });
+    function spawnParticle() {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 1.2 + 0.3;
+      particles.push({ x: mouse.x, y: mouse.y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed-0.6, life: 1, decay: Math.random()*0.022+0.018, size: Math.random()*4+2, hue: 120+Math.random()*40 });
+    }
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles = particles.filter(p => p.life > 0);
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.life -= p.decay; p.size *= 0.97;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(p.size, 0.1), 0, Math.PI * 2);
+        ctx.fillStyle = 'hsla(' + p.hue + ', 85%, 60%, ' + p.life.toFixed(2) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+</script>
+</body>
+</html>

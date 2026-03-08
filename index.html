@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoMiles — Smart CO₂ Travel Tracker</title>
+    <meta name="description" content="Track, compare, and reduce your travel carbon footprint with EcoMiles. Smart insights for greener journeys.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<!-- ══ NAVBAR ══ -->
+<nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container navbar-inner">
+        <a href="index.html" class="navbar-logo" aria-label="EcoMiles Home">
+            <div class="logo-icon">🌿</div>
+            EcoMiles
+        </a>
+
+        <ul class="navbar-links" id="nav-links">
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="pages/calculator.html">Calculator</a></li>
+            <li><a href="pages/compare.html">Compare</a></li>
+            <li><a href="pages/log.html">My Trips</a></li>
+            <li><a href="pages/about.html">About</a></li>
+        </ul>
+
+        <div class="navbar-auth">
+            <!-- Future: Replace with profile dropdown when backend ready -->
+            <button class="btn-login" data-action="login">Log In</button>
+            <button class="btn btn-primary btn-sm" data-action="login">Sign Up</button>
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">☀️</button>
+        </div>
+
+        <div class="hamburger" id="hamburger" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </div>
+    </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero" id="home">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-eyebrow">Smart Carbon Tracker</div>
+            <h1>
+                Travel Smarter.<br>
+                Emit <span class="highlight">Less.</span><br>
+                Live Greener.
+            </h1>
+            <p class="hero-desc">
+                EcoMiles calculates your travel carbon footprint in real-time, compares transport modes, logs your journey history, and gives you personalised tips to reduce your environmental impact.
+            </p>
+            <div class="hero-cta">
+                <a href="pages/calculator.html" class="btn btn-primary btn-lg">
+                    <span>🌿</span> Calculate My Trip
+                </a>
+                <a href="pages/compare.html" class="btn btn-outline btn-lg">
+                    <span>📊</span> Compare Modes
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div>
+                    <div class="hero-stat-num" id="stat-modes">8</div>
+                    <div class="hero-stat-label">Transport Modes</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">21kg</div>
+                    <div class="hero-stat-label">CO₂ per tree/year</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num">6x</div>
+                    <div class="hero-stat-label">Train vs. Plane</div>
+                </div>
+                <div>
+                    <div class="hero-stat-num" id="stat-trips-saved">0</div>
+                    <div class="hero-stat-label">Trips Logged</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+            <div class="hero-globe"></div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FACTS TICKER ══ -->
+<div class="container section-sm">
+    <div class="facts-ticker reveal">
+        <div class="ticker-label">📡 Eco Facts</div>
+        <div class="ticker-track">
+            <div class="ticker-inner" id="ticker-inner"><!-- filled by JS --></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══ HOW IT WORKS ══ -->
+<section class="section" id="how-it-works">
+    <div class="container">
+        <div class="section-label reveal">How it works</div>
+        <h2 class="section-title reveal">Three Steps to Greener Travel</h2>
+        <p class="section-sub reveal" style="margin-bottom:56px">No accounts needed to start. Just pick your transport and go.</p>
+
+        <div class="grid-3">
+            <div class="card reveal" style="text-align:center">
+                <div style="font-size:2.5rem;margin-bottom:16px">🚀</div>
+                <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:10px">1. Pick Your Mode</h3>
+                <p class="text-muted" style="font-size:0.92rem">Choose from 8 transport options — bike, walk, bus, train, car (petrol/diesel/electric), or plane.</p>
+            </div>
+            <div class="card reveal" style="text-align:center;animation-delay:0.1s">
+                <div style="font-size:2.5rem;margin-bottom:16px">📐</div>
+                <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:10px">2. Enter Details</h3>
+                <p class="text-muted" style="font-size:0.92rem">Add distance, number of passengers, and whether it's a round trip. We handle the maths.</p>
+            </div>
+            <div class="card reveal" style="text-align:center;animation-delay:0.2s">
+                <div style="font-size:2.5rem;margin-bottom:16px">🌱</div>
+                <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:10px">3. Get Insights</h3>
+                <p class="text-muted" style="font-size:0.92rem">See CO₂ totals, eco score, trees needed, fuel cost estimates, and personalised green tips.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FEATURES ══ -->
+<section class="section" style="background:var(--c-bg2);border-top:1px solid var(--c-border);border-bottom:1px solid var(--c-border)">
+    <div class="container">
+        <div class="section-label reveal">Features</div>
+        <h2 class="section-title reveal">Everything You Need</h2>
+        <p class="section-sub reveal" style="margin-bottom:56px">Built for curious travellers who care about their planet.</p>
+
+        <div class="grid-4">
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">🎯</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Eco Score</h4>
+                <p class="text-muted" style="font-size:0.88rem">A/B/C grade system that rates your trip's environmental impact instantly.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">📊</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Visual Charts</h4>
+                <p class="text-muted" style="font-size:0.88rem">Animated bar charts comparing your choice against all other modes.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">🌳</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Tree Counter</h4>
+                <p class="text-muted" style="font-size:0.88rem">See exactly how many trees it takes to offset your trip's emissions.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">⚖️</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Side-by-Side Compare</h4>
+                <p class="text-muted" style="font-size:0.88rem">Compare any two transport modes head-to-head for the same journey.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">📝</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Trip History Log</h4>
+                <p class="text-muted" style="font-size:0.88rem">Save trips, view cumulative CO₂, and track your eco progress over time.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">💡</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Smart Equivalences</h4>
+                <p class="text-muted" style="font-size:0.88rem">CO₂ in real-world terms: smartphones charged, litres of water boiled, and more.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">🔄</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Round Trip Toggle</h4>
+                <p class="text-muted" style="font-size:0.88rem">One-way or return trip — automatically doubles the distance and recalculates.</p>
+            </div>
+            <div class="card reveal">
+                <div style="font-size:1.8rem;margin-bottom:12px">📤</div>
+                <h4 style="font-family:var(--font-display);font-weight:700;margin-bottom:8px">Share Results</h4>
+                <p class="text-muted" style="font-size:0.88rem">Copy or share your eco report to spread awareness with friends and family.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ CTA STRIP ══ -->
+<section class="section">
+    <div class="container">
+        <div class="card reveal" style="text-align:center;padding:64px 40px;background:linear-gradient(135deg,rgba(74,197,107,0.1),rgba(74,197,107,0.04))">
+            <div style="font-size:3rem;margin-bottom:16px">🌍</div>
+            <h2 style="font-family:var(--font-display);font-size:2.2rem;font-weight:800;margin-bottom:16px;letter-spacing:-0.02em">
+                Ready to travel smarter?
+            </h2>
+            <p class="text-muted" style="max-width:440px;margin:0 auto 32px;font-size:1.05rem">
+                Calculate your first trip in under 60 seconds. No sign-up required.
+            </p>
+            <a href="pages/calculator.html" class="btn btn-primary btn-lg">
+                🌿 Start Calculating
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <div class="footer-logo"><span>🌿</span> EcoMiles</div>
+                <p class="footer-desc">A smart CO₂ travel tracker built to help you understand and reduce your environmental impact, one trip at a time.</p>
+                <div style="display:flex;gap:10px">
+                    <!-- Future: real social links -->
+                    <a href="#" class="btn btn-ghost btn-sm" aria-label="GitHub">⭐ GitHub</a>
+                </div>
+            </div>
+            <div>
+                <div class="footer-col-title">Navigate</div>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="pages/calculator.html">Calculator</a></li>
+                    <li><a href="pages/compare.html">Compare Modes</a></li>
+                    <li><a href="pages/log.html">Trip Log</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-col-title">Resources</div>
+                <ul class="footer-links">
+                    <li><a href="pages/about.html">About</a></li>
+                    <li><a href="pages/about.html#methodology">Methodology</a></li>
+                    <li><a href="pages/about.html#data">Data Sources</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="footer-col-title">Coming Soon</div>
+                <ul class="footer-links">
+                    <li><span style="color:var(--c-text-dim)">👤 User Accounts</span></li>
+                    <li><span style="color:var(--c-text-dim)">☁️ Cloud Sync</span></li>
+                    <li><span style="color:var(--c-text-dim)">🗺️ Route Planner</span></li>
+                    <li><span style="color:var(--c-text-dim)">📱 Mobile App</span></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>© 2025 EcoMiles. Built with 💚 for the planet.</span>
+            <span style="font-family:var(--font-mono);font-size:0.75rem">v1.0.0 — Static Release</span>
+        </div>
+    </div>
+</footer>
+
+<!-- ══ AUTH MODAL (UI ready for backend) ══ -->
+<div class="modal-overlay" id="auth-modal" role="dialog" aria-modal="true" aria-label="Sign in or create account">
+    <div class="modal">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+            <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:800">🌿 EcoMiles</div>
+            <button id="modal-close" style="background:none;border:none;color:var(--c-text-muted);cursor:pointer;font-size:1.3rem;padding:4px" aria-label="Close">✕</button>
+        </div>
+
+        <!-- Tab Nav -->
+        <div class="tab-nav" style="margin-bottom:24px">
+            <button class="tab-btn active" data-modal-tab="login">Log In</button>
+            <button class="tab-btn" data-modal-tab="signup">Sign Up</button>
+        </div>
+
+        <!-- Login Panel -->
+        <div data-modal-panel="login">
+            <div style="display:flex;flex-direction:column;gap:16px">
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="EcoMiles.Utils.showToast('Backend not connected yet — coming soon! 🚀')">
+                    Log In
+                </button>
+                <p style="text-align:center;font-size:0.82rem;color:var(--c-text-dim)">
+                    <a href="#" style="color:var(--c-primary)">Forgot password?</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Sign Up Panel -->
+        <div data-modal-panel="signup" style="display:none">
+            <div style="display:flex;flex-direction:column;gap:16px">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" placeholder="Your Name" autocomplete="name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="Create a password" autocomplete="new-password">
+                </div>
+                <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="EcoMiles.Utils.showToast('Backend not connected yet — coming soon! 🚀')">
+                    Create Account
+                </button>
+                <p style="text-align:center;font-size:0.82rem;color:var(--c-text-dim)">
+                    By signing up you agree to our <a href="#" style="color:var(--c-primary)">Terms</a>
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--c-border);text-align:center">
+            <p style="font-size:0.8rem;color:var(--c-text-dim)">
+                ☁️ Accounts enable cloud sync of your trip history across devices.<br>
+                <strong style="color:var(--c-primary)">Coming soon with MongoDB backend.</strong>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ══ TOAST ══ -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- ══ SCRIPTS ══ -->
+<script src="js/app.js"></script>
+<script>
+    // Home page specific: update live trip count
+    window.addEventListener('load', () => {
+        const trips = JSON.parse(localStorage.getItem('ecomiles_trips') || '[]');
+        const el = document.getElementById('stat-trips-saved');
+        if (el && trips.length > 0) {
+            window.EcoMiles?.Utils?.animateValue(el, 0, trips.length, 1000, 0);
+        }
+    });
+</script>
+<canvas id="cursor-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999;"></canvas>
+<script>
+    (function () {
+        const canvas = document.getElementById("cursor-canvas");
+        const ctx = canvas.getContext("2d");
+        let W = canvas.width = window.innerWidth;
+        let H = canvas.height = window.innerHeight;
+        let mouse = { x: W / 2, y: H / 2 };
+        let particles = [];
+        window.addEventListener("resize", () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+        window.addEventListener("mousemove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; for (let i = 0; i < 2; i++) spawnParticle(); });
+        function spawnParticle() {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 1.2 + 0.3;
+            particles.push({ x: mouse.x, y: mouse.y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed-0.6, life: 1, decay: Math.random()*0.022+0.018, size: Math.random()*4+2, hue: 120+Math.random()*40 });
+        }
+        function animate() {
+            ctx.clearRect(0, 0, W, H);
+            particles = particles.filter(p => p.life > 0);
+            for (const p of particles) {
+                p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.life -= p.decay; p.size *= 0.97;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, Math.max(p.size, 0.1), 0, Math.PI * 2);
+                ctx.fillStyle = 'hsla(' + p.hue + ', 85%, 60%, ' + p.life.toFixed(2) + ')';
+                ctx.fill();
+            }
+            requestAnimationFrame(animate);
+        }
+        animate();
+    })();
+</script>
+</body>
+</html>

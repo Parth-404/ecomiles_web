@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare Modes — EcoMiles</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="container navbar-inner">
+    <a href="../index.html" class="navbar-logo"><div class="logo-icon">🌿</div>EcoMiles</a>
+    <ul class="navbar-links" id="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="calculator.html">Calculator</a></li>
+      <li><a href="compare.html" class="active">Compare</a></li>
+      <li><a href="log.html">My Trips</a></li>
+      <li><a href="about.html">About</a></li>
+    </ul>
+    <div class="navbar-auth">
+      <button class="btn-login" data-action="login">Log In</button>
+      <button class="btn btn-primary btn-sm" data-action="login">Sign Up</button>
+      <button class="theme-toggle" id="theme-toggle">☀️</button>
+    </div>
+    <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div style="padding-top:100px;padding-bottom:40px;background:var(--c-bg2);border-bottom:1px solid var(--c-border)">
+  <div class="container">
+    <div class="section-label">Side-by-Side</div>
+    <h1 style="font-size:clamp(1.8rem,3vw,2.8rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:10px">Compare Transport Modes</h1>
+    <p class="text-muted">Choose any two modes and see exactly how they stack up for the same journey.</p>
+  </div>
+</div>
+
+<section class="section" id="compare-section">
+  <div class="container">
+
+    <!-- COMPARE FORM -->
+    <div class="card reveal" style="max-width:900px;margin:0 auto 40px">
+      <h2 style="font-family:var(--font-display);font-weight:700;font-size:1.2rem;margin-bottom:24px">Set Journey Parameters</h2>
+
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:20px;align-items:end;margin-bottom:24px">
+        <div class="form-group">
+          <label class="form-label" for="compare-mode-a">Mode A</label>
+          <select id="compare-mode-a" class="form-select"></select>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;font-size:1.4rem;padding-bottom:8px;color:var(--c-text-muted);font-family:var(--font-display);font-weight:700">vs</div>
+
+        <div class="form-group">
+          <label class="form-label" for="compare-mode-b">Mode B</label>
+          <select id="compare-mode-b" class="form-select"></select>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:24px">
+        <div class="form-group">
+          <label class="form-label" for="compare-distance">Distance (km)</label>
+          <input type="number" id="compare-distance" class="form-input" value="200" min="1" max="20000" placeholder="200">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="compare-passengers">Passengers</label>
+          <input type="number" id="compare-passengers" class="form-input" value="1" min="1" max="800" placeholder="1">
+        </div>
+      </div>
+
+      <button id="run-compare" class="btn btn-primary btn-lg">⚖️ Compare Now</button>
+    </div>
+
+    <!-- COMPARE RESULTS -->
+    <div id="compare-results" class="hidden" style="max-width:900px;margin:0 auto">
+
+      <!-- Winner Banner -->
+      <div class="card reveal" style="margin-bottom:24px;background:linear-gradient(135deg,rgba(74,197,107,0.1),rgba(74,197,107,0.04));border-color:rgba(74,197,107,0.3);text-align:center;padding:24px">
+        <p id="compare-winner" style="font-size:1.05rem;line-height:1.7"></p>
+      </div>
+
+      <!-- Side-by-side cards -->
+      <div class="grid-2" style="margin-bottom:24px">
+        <!-- Mode A -->
+        <div class="card reveal">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <div style="font-size:2.2rem" id="cmp-A-icon">—</div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--c-text-dim)">Mode A</div>
+              <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem" id="cmp-A-mode">—</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Total CO₂</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-A-co2">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Per Person</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-A-person">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Trees to Offset</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-A-trees">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Est. Cost</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-A-cost">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0">
+              <span class="text-muted" style="font-size:0.88rem">Eco Grade</span>
+              <span style="font-family:var(--font-display);font-weight:700" id="cmp-A-score">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mode B -->
+        <div class="card reveal">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+            <div style="font-size:2.2rem" id="cmp-B-icon">—</div>
+            <div>
+              <div style="font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--c-text-dim)">Mode B</div>
+              <div style="font-family:var(--font-display);font-weight:700;font-size:1.1rem" id="cmp-B-mode">—</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Total CO₂</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-B-co2">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Per Person</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-B-person">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Trees to Offset</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-B-trees">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--c-border)">
+              <span class="text-muted" style="font-size:0.88rem">Est. Cost</span>
+              <span style="font-family:var(--font-mono);font-weight:600" id="cmp-B-cost">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:10px 0">
+              <span class="text-muted" style="font-size:0.88rem">Eco Grade</span>
+              <span style="font-family:var(--font-display);font-weight:700" id="cmp-B-score">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="card reveal" style="margin-bottom:24px">
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:16px">Head-to-Head Comparison</h3>
+        <div class="chart-container"><canvas id="compare-chart"></canvas></div>
+      </div>
+
+      <!-- All modes ranking -->
+      <div class="card reveal">
+        <h3 style="font-family:var(--font-display);font-weight:700;margin-bottom:6px">All Modes Ranked — CO₂ per Person</h3>
+        <p class="text-muted" style="font-size:0.85rem;margin-bottom:20px">For this exact journey distance and passenger count.</p>
+        <div id="all-modes-bars"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-bottom">
+      <span>© 2025 EcoMiles. Built with 💚 for the planet.</span>
+      <a href="../index.html" style="color:var(--c-text-dim)">← Back to Home</a>
+    </div>
+  </div>
+</footer>
+
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px">
+      <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:800">🌿 EcoMiles</div>
+      <button id="modal-close" style="background:none;border:none;color:var(--c-text-muted);cursor:pointer;font-size:1.3rem">✕</button>
+    </div>
+    <div class="tab-nav"><button class="tab-btn active" data-modal-tab="login">Log In</button><button class="tab-btn" data-modal-tab="signup">Sign Up</button></div>
+    <div data-modal-panel="login">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="••••••••"></div>
+        <button class="btn btn-primary btn-full" onclick="EcoMiles.Utils.showToast('Backend coming soon! 🚀')">Log In</button>
+      </div>
+    </div>
+    <div data-modal-panel="signup" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-input" placeholder="Your Name"></div>
+        <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="you@example.com"></div>
+        <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="Create a password"></div>
+        <button class="btn btn-primary btn-full" onclick="EcoMiles.Utils.showToast('Backend coming soon! 🚀')">Create Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+<script src="../js/app.js"></script>
+<script src="../js/log-compare.js"></script>
+<canvas id="cursor-canvas" style="position:fixed;top:0;left:0;pointer-events:none;z-index:9999;"></canvas>
+<script>
+  (function () {
+    const canvas = document.getElementById("cursor-canvas");
+    const ctx = canvas.getContext("2d");
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    let mouse = { x: W / 2, y: H / 2 };
+    let particles = [];
+    window.addEventListener("resize", () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; });
+    window.addEventListener("mousemove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; for (let i = 0; i < 2; i++) spawnParticle(); });
+    function spawnParticle() {
+      const angle = Math.random() * Math.PI * 2;
+      const speed = Math.random() * 1.2 + 0.3;
+      particles.push({ x: mouse.x, y: mouse.y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed-0.6, life: 1, decay: Math.random()*0.022+0.018, size: Math.random()*4+2, hue: 120+Math.random()*40 });
+    }
+    function animate() {
+      ctx.clearRect(0, 0, W, H);
+      particles = particles.filter(p => p.life > 0);
+      for (const p of particles) {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.life -= p.decay; p.size *= 0.97;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(p.size, 0.1), 0, Math.PI * 2);
+        ctx.fillStyle = 'hsla(' + p.hue + ', 85%, 60%, ' + p.life.toFixed(2) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  })();
+</script>
+</body>
+</html>
